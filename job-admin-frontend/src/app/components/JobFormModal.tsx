@@ -110,22 +110,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
 
             <Grid.Col span={6}>
               <Grid gutter="sm">
-                <Grid.Col span={6}>
-                  <NumberInput
-                    label="Salary Min"
-                    placeholder="₹0"
-                    prefix="₹"
-                    onChange={(val) => setValue('salaryMin', val || 0)}
-                    hideControls
-                    styles={sharedStyles}
-                    parser={(value) => value?.replace(/₹\s?|(,*)/g, '')}
-                    formatter={(value) =>
-                      !Number.isNaN(parseFloat(value || ''))
-                        ? `₹${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                        : '₹'
-                    }
-                  />
-                </Grid.Col>
+              
                 <Grid.Col span={6}>
                   <NumberInput
                     label="Salary Max"
