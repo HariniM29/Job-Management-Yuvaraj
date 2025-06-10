@@ -11,53 +11,51 @@ import {
   Box,
   NumberInput,
 } from '@mantine/core';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
-// Define the type/interface for your form data for better type safety
+// --- Interfaces ---
 interface JobFormData {
   title: string;
   companyName: string;
-  location: string | null; // Select components can return string or null
-  jobType: string | null;  // Select components can return string or null
+  location: string;
+  jobType: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
   salaryMin: number;
   salaryMax: number;
-  applicationDeadline: string; // Assuming input type="date" yields a string
+  applicationDeadline: string;
   description: string;
-  salaryRange?: string; // This field is derived, so it's optional in the initial form data
+  salaryRange?: string; // Optional, will be set in handleFormSubmit
 }
 
-// Define the props for your JobFormModal component
 interface JobFormModalProps {
   opened: boolean;
   close: () => void;
   onSubmit: (data: JobFormData) => void;
 }
+// ---
 
 export default function JobFormModal({ opened, close, onSubmit }: JobFormModalProps) {
-  // Use the JobFormData interface to type the useForm hook, removing 'any'
-  // Removed 'watch' from destructuring as it was unused, addressing a previous ESLint error.
   const { register, handleSubmit, reset, setValue } = useForm<JobFormData>();
 
-  const handleFormSubmit = (data: JobFormData) => { // Type the 'data' parameter as JobFormData
-    // Ensure salaries are treated as numbers, defaulting to 0 if null/undefined
+  const handleFormSubmit: SubmitHandler<JobFormData> = (data) => {
+    // Convert to numbers
     data.salaryMin = Number(data.salaryMin) || 0;
     data.salaryMax = Number(data.salaryMax) || 0;
 
-    // Calculate and set average salary based on min/max
+    // Set average salary
     if (data.salaryMin > 0 && data.salaryMax > 0) {
       const avg = Math.round((data.salaryMin + data.salaryMax) / 2);
-      data.salaryRange = `₹${avg}`;
+      data.salaryRange = `₹${avg.toLocaleString('en-IN')}`; // Formats with Indian numbering system
     } else {
       data.salaryRange = 'Not disclosed';
     }
 
-    onSubmit(data); // Call the onSubmit prop with the processed data
-    reset();        // Reset the form fields
-    close();        // Close the modal
+    onSubmit(data);
+    reset();
+    close();
   };
 
-  // Common styles applied to multiple form inputs
+  // Custom styles
   const sharedStyles = {
     label: { fontWeight: 500 },
     input: {
@@ -108,7 +106,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
                 label="Location"
                 placeholder="Choose Preferred Location"
                 data={['Chennai', 'Bangalore', 'Remote']}
-                onChange={(val) => setValue('location', val)} // Use setValue for React Hook Form
+                onChange={(val) => setValue('location', val as JobFormData['location'])}
                 required
                 styles={sharedStyles}
                 rightSection={<KeyboardArrowDownIcon fontSize="small" />}
@@ -118,7 +116,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
               <Select
                 label="Job Type"
                 data={['Full-time', 'Part-time', 'Contract', 'Internship']}
-                onChange={(val) => setValue('jobType', val)} // Use setValue for React Hook Form
+                onChange={(val) => setValue('jobType', val as JobFormData['jobType'])}
                 required
                 styles={sharedStyles}
                 rightSection={<KeyboardArrowDownIcon fontSize="small" />}
@@ -133,13 +131,12 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
                     placeholder="₹0"
                     prefix="₹"
                     onChange={(val) => setValue('salaryMin', val || 0)}
-                    // Corrected: Replaced 'withControls={false}' with 'hideControls' for Mantine v6+ compatibility
                     hideControls
                     styles={sharedStyles}
                     parser={(value) => value?.replace(/₹\s?|(,*)/g, '')}
                     formatter={(value) =>
                       !Number.isNaN(parseFloat(value || ''))
-                        ? `₹${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                        ? `₹${parseFloat(value || '').toLocaleString('en-IN')}`
                         : '₹'
                     }
                   />
@@ -150,13 +147,12 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
                     placeholder="₹12,00,000"
                     prefix="₹"
                     onChange={(val) => setValue('salaryMax', val || 0)}
-                    // Corrected: Replaced 'withControls={false}' with 'hideControls' for Mantine v6+ compatibility
                     hideControls
                     styles={sharedStyles}
                     parser={(value) => value?.replace(/₹\s?|(,*)/g, '')}
                     formatter={(value) =>
                       !Number.isNaN(parseFloat(value || ''))
-                        ? `₹${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                        ? `₹${parseFloat(value || '').toLocaleString('en-IN')}`
                         : '₹'
                     }
                   />
