@@ -117,7 +117,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
                     placeholder="₹12,00,000"
                     prefix="₹"
                     onChange={(val) => setValue('salaryMax', val || 0)}
-                    hideControls
+                    withControls={false}
                     styles={sharedStyles}
                     parser={(value) => value?.replace(/₹\s?|(,*)/g, '')}
                     formatter={(value) =>
