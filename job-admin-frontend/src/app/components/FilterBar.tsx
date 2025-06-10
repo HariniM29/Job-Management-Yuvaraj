@@ -13,19 +13,21 @@ import SearchIcon from '@mui/icons-material/Search';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
-type Filters = {
+// Define the interface for your filters state
+interface JobFilters {
   title: string;
   location: string;
   jobType: string;
   salaryRange: [number, number];
-};
+}
 
-type Props = {
-  filters: Filters;
-  setFilters: (filters: Filters) => void;
-};
+// Define the props for the Navbar component
+interface NavbarProps {
+  filters: JobFilters;
+  setFilters: React.Dispatch<React.SetStateAction<JobFilters>>;
+}
 
-export default function Navbar({ filters, setFilters }: Props) {
+export default function Navbar({ filters, setFilters }: NavbarProps) {
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -33,15 +35,7 @@ export default function Navbar({ filters, setFilters }: Props) {
   };
 
   return (
-    <Group
-      style={{
-        marginBottom: '24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '16px',
-      }}
-    >
+    <Group justify="space-between" mb="lg" gap="md" wrap="wrap">
       <TextInput
         placeholder="Search by Job Title, Role"
         name="title"
@@ -74,30 +68,21 @@ export default function Navbar({ filters, setFilters }: Props) {
           { value: 'Internship', label: 'Internship' },
         ]}
         value={filters.jobType}
-        onChange={(value) =>
-          setFilters({ ...filters, jobType: value || '' })
-        }
+        onChange={(value) => setFilters({ ...filters, jobType: value || '' })}
         leftSection={<PersonOutlineIcon fontSize="small" />}
         leftSectionWidth={40}
         radius="md"
         style={{ flexGrow: 1 }}
       />
-
       <Box style={{ flexGrow: 1, minWidth: 250 }}>
-        <Box
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginBottom: '8px',
-          }}
-        >
+        <Group position="apart" mb={4}>
           <Text size="sm" fw={500} c="black">
             Salary Per Month
           </Text>
           <Text size="sm" fw={500} c="black">
             ₹{filters.salaryRange[0] / 1000}k - ₹{filters.salaryRange[1] / 1000}k
           </Text>
-        </Box>
+        </Group>
 
         <RangeSlider
           min={0}
