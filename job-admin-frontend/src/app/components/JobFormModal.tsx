@@ -1,5 +1,4 @@
 'use client';
-
 import {
   Modal,
   Stack,
@@ -14,21 +13,38 @@ import {
 } from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { ReactNode } from 'react';
 
-type JobFormModalProps = {
+// Define the type/interface for your form data for better type safety
+interface JobFormData {
+  title: string;
+  companyName: string;
+  location: string | null; // Select components can return string or null
+  jobType: string | null;  // Select components can return string or null
+  salaryMin: number;
+  salaryMax: number;
+  applicationDeadline: string; // Assuming input type="date" yields a string
+  description: string;
+  salaryRange?: string; // This field is derived, so it's optional in the initial form data
+}
+
+// Define the props for your JobFormModal component
+interface JobFormModalProps {
   opened: boolean;
   close: () => void;
-  onSubmit: (data: any) => void;
-};
+  onSubmit: (data: JobFormData) => void;
+}
 
 export default function JobFormModal({ opened, close, onSubmit }: JobFormModalProps) {
-  const { register, handleSubmit, reset, setValue } = useForm();
+  // Use the JobFormData interface to type the useForm hook, removing 'any'
+  // Removed 'watch' from destructuring as it was unused, addressing a previous ESLint error.
+  const { register, handleSubmit, reset, setValue } = useForm<JobFormData>();
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: JobFormData) => { // Type the 'data' parameter as JobFormData
+    // Ensure salaries are treated as numbers, defaulting to 0 if null/undefined
     data.salaryMin = Number(data.salaryMin) || 0;
     data.salaryMax = Number(data.salaryMax) || 0;
 
+    // Calculate and set average salary based on min/max
     if (data.salaryMin > 0 && data.salaryMax > 0) {
       const avg = Math.round((data.salaryMin + data.salaryMax) / 2);
       data.salaryRange = `₹${avg}`;
@@ -36,11 +52,12 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
       data.salaryRange = 'Not disclosed';
     }
 
-    onSubmit(data);
-    reset();
-    close();
+    onSubmit(data); // Call the onSubmit prop with the processed data
+    reset();        // Reset the form fields
+    close();        // Close the modal
   };
 
+  // Common styles applied to multiple form inputs
   const sharedStyles = {
     label: { fontWeight: 500 },
     input: {
@@ -65,7 +82,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
       }
     >
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Box style={{ padding: '1rem' }}>
+        <Stack spacing="md" p="sm">
           <Grid>
             <Grid.Col span={6}>
               <TextInput
@@ -91,7 +108,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
                 label="Location"
                 placeholder="Choose Preferred Location"
                 data={['Chennai', 'Bangalore', 'Remote']}
-                onChange={(val) => setValue('location', val)}
+                onChange={(val) => setValue('location', val)} // Use setValue for React Hook Form
                 required
                 styles={sharedStyles}
                 rightSection={<KeyboardArrowDownIcon fontSize="small" />}
@@ -101,7 +118,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
               <Select
                 label="Job Type"
                 data={['Full-time', 'Part-time', 'Contract', 'Internship']}
-                onChange={(val) => setValue('jobType', val)}
+                onChange={(val) => setValue('jobType', val)} // Use setValue for React Hook Form
                 required
                 styles={sharedStyles}
                 rightSection={<KeyboardArrowDownIcon fontSize="small" />}
@@ -110,14 +127,31 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
 
             <Grid.Col span={6}>
               <Grid gutter="sm">
-              
+                <Grid.Col span={6}>
+                  <NumberInput
+                    label="Salary Min"
+                    placeholder="₹0"
+                    prefix="₹"
+                    onChange={(val) => setValue('salaryMin', val || 0)}
+                    // Corrected: Replaced 'withControls={false}' with 'hideControls' for Mantine v6+ compatibility
+                    hideControls
+                    styles={sharedStyles}
+                    parser={(value) => value?.replace(/₹\s?|(,*)/g, '')}
+                    formatter={(value) =>
+                      !Number.isNaN(parseFloat(value || ''))
+                        ? `₹${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                        : '₹'
+                    }
+                  />
+                </Grid.Col>
                 <Grid.Col span={6}>
                   <NumberInput
                     label="Salary Max"
                     placeholder="₹12,00,000"
                     prefix="₹"
                     onChange={(val) => setValue('salaryMax', val || 0)}
-                    withControls={false}
+                    // Corrected: Replaced 'withControls={false}' with 'hideControls' for Mantine v6+ compatibility
+                    hideControls
                     styles={sharedStyles}
                     parser={(value) => value?.replace(/₹\s?|(,*)/g, '')}
                     formatter={(value) =>
@@ -180,7 +214,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
               </Button>
             </Box>
           </Group>
-        </Box>
+        </Stack>
       </form>
     </Modal>
   );
