@@ -32,7 +32,7 @@ type Filters = {
   salaryRange: [number, number];
 };
 
-const API_BASE_URL = 'https://job-management-3.onrender.comhttps://job-management-admin-interface-1.onrender.com/
+const API_BASE_URL = 'https://job-management-3.onrender.comhttps://job-management-admin-interface-1.onrender.com/'
 export default function HomePage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filters, setFilters] = useState<Filters>({
