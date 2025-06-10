@@ -65,7 +65,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
       }
     >
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Stack spacing={16} style={{ padding: '1rem' }}>
+        <Box style={{ padding: '1rem' }}>
           <Grid>
             <Grid.Col span={6}>
               <TextInput
@@ -195,7 +195,7 @@ export default function JobFormModal({ opened, close, onSubmit }: JobFormModalPr
               </Button>
             </Box>
           </Group>
-        </Stack>
+        </Box>
       </form>
     </Modal>
   );
