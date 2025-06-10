@@ -1,4 +1,5 @@
 'use client';
+
 import {
   Modal,
   Stack,
@@ -13,16 +14,21 @@ import {
 } from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { ReactNode } from 'react';
 
-export default function JobFormModal({ opened, close, onSubmit }: any) {
-  const { register, handleSubmit, reset, setValue, watch } = useForm();
+type JobFormModalProps = {
+  opened: boolean;
+  close: () => void;
+  onSubmit: (data: any) => void;
+};
+
+export default function JobFormModal({ opened, close, onSubmit }: JobFormModalProps) {
+  const { register, handleSubmit, reset, setValue } = useForm();
 
   const handleFormSubmit = (data: any) => {
-    // Convert to numbers
     data.salaryMin = Number(data.salaryMin) || 0;
     data.salaryMax = Number(data.salaryMax) || 0;
 
-    // Set average salary
     if (data.salaryMin > 0 && data.salaryMax > 0) {
       const avg = Math.round((data.salaryMin + data.salaryMax) / 2);
       data.salaryRange = `₹${avg}`;
@@ -35,7 +41,6 @@ export default function JobFormModal({ opened, close, onSubmit }: any) {
     close();
   };
 
-  // Custom styles
   const sharedStyles = {
     label: { fontWeight: 500 },
     input: {
@@ -60,7 +65,7 @@ export default function JobFormModal({ opened, close, onSubmit }: any) {
       }
     >
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Stack spacing="md" p="sm">
+        <Stack spacing={16} style={{ padding: '1rem' }}>
           <Grid>
             <Grid.Col span={6}>
               <TextInput
