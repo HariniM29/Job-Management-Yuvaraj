@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Grid,
@@ -32,7 +32,7 @@ type Filters = {
   salaryRange: [number, number];
 };
 
-const API_BASE_URL = 'https://job-admin-backend.onrender.com';
+const API_BASE_URL = 'https://job-management-3.onrender.com';
 
 export default function HomePage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -114,4 +114,18 @@ export default function HomePage() {
       <Grid gutter="lg">
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
-            <GridCol key={job.id} span={{ base: 12, sm: 6, md: 4,
+            <GridCol key={job.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
+              <JobCard job={job} />
+            </GridCol>
+          ))
+        ) : (
+          <GridCol span={12}>
+            <Text>No jobs match the selected filters.</Text>
+          </GridCol>
+        )}
+      </Grid>
+
+      <JobFormModal opened={opened} close={close} onSubmit={handleJobCreate} />
+    </Container>
+  );
+}
