@@ -32,6 +32,8 @@ type Filters = {
   salaryRange: [number, number];
 };
 
+const API_BASE_URL = 'https://job-admin-backend.onrender.com';
+
 export default function HomePage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filters, setFilters] = useState<Filters>({
@@ -45,7 +47,7 @@ export default function HomePage() {
 
   const fetchJobs = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/jobs');
+      const res = await axios.get(`${API_BASE_URL}/jobs`);
       setJobs(res.data);
     } catch (err) {
       console.error('Error fetching jobs:', err);
@@ -58,7 +60,7 @@ export default function HomePage() {
 
   const handleJobCreate = async (data: Job) => {
     try {
-      await axios.post('http://localhost:3001/jobs', data);
+      await axios.post(`${API_BASE_URL}/jobs`, data);
       fetchJobs();
     } catch (err) {
       console.error('Error creating job:', err);
@@ -112,18 +114,4 @@ export default function HomePage() {
       <Grid gutter="lg">
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
-            <GridCol key={job.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
-              <JobCard job={job} />
-            </GridCol>
-          ))
-        ) : (
-          <GridCol span={12}>
-            <Text>No jobs match the selected filters.</Text>
-          </GridCol>
-        )}
-      </Grid>
-
-      <JobFormModal opened={opened} close={close} onSubmit={handleJobCreate} />
-    </Container>
-  );
-}
+            <GridCol key={job.id} span={{ base: 12, sm: 6, md: 4,
